@@ -35,7 +35,7 @@ class Perceptron(Classifier):
     weight : list
     """
     def __init__(self, train, valid, test, 
-                                    learningRate=0.01, epochs=50):
+                                    learningRate=0.1, epochs=50):
 
         self.learningRate = learningRate
         self.epochs = epochs
@@ -48,6 +48,10 @@ class Perceptron(Classifier):
         # around 0 and0.1
         self.weight = np.random.rand(self.trainingSet.input.shape[1])/100
 
+    def hallo(self):
+	print("hallo")
+	return 4
+
     def train(self, verbose=True):
         """Train the perceptron with the perceptron learning algorithm.
 
@@ -56,9 +60,17 @@ class Perceptron(Classifier):
         verbose : boolean
             Print logging messages with validation accuracy if verbose is True.
         """
-        
         # Write your code to train the perceptron here
-        pass
+	count = 0
+	while count < self.epochs:
+            count += 1
+            for i in range(0, len(self.trainingSet.input)):
+ 	    	x = self.trainingSet.input[i]
+		label = self.trainingSet.label[i]
+		result = self.fire(x)
+		error = int(label) - int(result)
+
+		self.updateWeights(x ,error)
 
     def classify(self, testInstance):
         """Classify a single instance.
@@ -73,7 +85,7 @@ class Perceptron(Classifier):
             True if the testInstance is recognized as a 7, False otherwise.
         """
         # Write your code to do the classification on an input image
-        pass
+        return self.fire(testInstance)
 
     def evaluate(self, test=None):
         """Evaluate a whole dataset.
@@ -87,17 +99,18 @@ class Perceptron(Classifier):
         -------
         List:
             List of classified decisions for the dataset's entries.
-        """
-        if test is None:
-            test = self.testSet.input
-        # Once you can classify an instance, just use map for all of the test
-        # set.
-        return list(map(self.classify, test))
+        # set. """
+	if test == None:
+        	return list(map(self.classify, self.testSet.input))
+	return list(map(self.classify, test))
 
     def updateWeights(self, input, error):
         # Write your code to update the weights of the perceptron here
-        pass
-         
+	    if error == 0:
+     		return
+
+            self.weight = self.weight + error * input
+	   
     def fire(self, input):
         """Fire the output of the perceptron corresponding to the input """
         return Activation.sign(np.dot(np.array(input), self.weight))
