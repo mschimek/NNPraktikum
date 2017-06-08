@@ -1,3 +1,16 @@
+#Branches
+
+##ex1-our-solution
+Our implementation of the first exercise (Rosenblatt perceptron)
+
+##ex2-our-solution
+Our implementation of the second exercise
+
+##Ex1
+Coding framework for the second excercise + solution of the first exercise provided by the 'uebungsleiter'
+
+
+
 # NNPraktikum
 The coding framework for KIT Neural Network Praktikum
 
