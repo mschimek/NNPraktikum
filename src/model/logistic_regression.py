@@ -35,7 +35,7 @@ class LogisticRegression(Classifier):
     epochs : positive int
     """
 
-    def __init__(self, train, valid, test, learningRate=0.01, epochs=50):
+    def __init__(self, train, valid, test, learningRate=0.01, epochs=50, errorstr="MSE"):
 
         self.learningRate = learningRate
         self.epochs = epochs
@@ -43,6 +43,7 @@ class LogisticRegression(Classifier):
         self.trainingSet = train
         self.validationSet = valid
         self.testSet = test
+        self.errorstr = errorstr
 
         # Initialize the weight vector with small values
         self.weight = 0.01*np.random.randn(self.trainingSet.input.shape[1])
@@ -57,24 +58,37 @@ class LogisticRegression(Classifier):
         """
 
         from util.loss_functions import MeanSquaredError
-        loss = MeanSquaredError()
+        from util.loss_functions import BinaryCrossEntropyError
+        from util.loss_functions import DifferentError
+
+        if self.errorstr == "MSE":
+            loss = MeanSquaredError()
+        elif self.errorstr == "BCE":
+            loss = BinaryCrossEntropyError()
+            #loss = DifferentError()
+        else:
+            print "ERROR loss function"
+
 
         for x in range(self.epochs):
             #output and targetvec
             outputvec = self.fire(self.trainingSet.input)
             targetvec = self.trainingSet.label
 
-            #MSE 
-            weigtsGrad = self.learningRate*np.dot((targetvec - outputvec)*outputvec*(1.0 - outputvec),self.trainingSet.input)
+            if self.errorstr == "MSE":
+                #MSE 
+                weightsGrad = self.learningRate*np.dot((targetvec - outputvec)*outputvec*(1.0 - outputvec),self.trainingSet.input)
+            elif self.errorstr == "BCE":
+                #BCE
+                weightsGrad = self.learningRate*np.dot(targetvec - outputvec,self.trainingSet.input)
+            else:
+                print "ERROR weight gradient"
 
             if verbose:
                 totalError = loss.calculateError(targetvec,outputvec)
                 logging.info("Epoch: %i; Error: %i", x, totalError)
-                #if totalError <= 20:
-                #    self.learningRate = 0.0001
 
-
-            self.updateWeights(weigtsGrad)
+            self.updateWeights(weightsGrad)
 
 
 
@@ -91,8 +105,9 @@ class LogisticRegression(Classifier):
         bool :
             True if the testInstance is recognized as a 7, False otherwise.
         """
-        return np.random.random_sample() <= self.fire(testInstance)
-        #return self.fire(testInstance) >= 0.5  # works better?
+
+        #return np.random.random_sample() <= self.fire(testInstance)
+        return self.fire(testInstance) >= 0.5  # works better than the classification above
 
     def evaluate(self, test=None):
         """Evaluate a whole dataset.
