@@ -70,6 +70,8 @@ class LogisticRegression(Classifier):
             if verbose:
                 totalError = loss.calculateError(targetvec,outputvec)
                 logging.info("Epoch: %i; Error: %i", x, totalError)
+                #if totalError <= 20:
+                #    self.learningRate = 0.0001
 
 
             self.updateWeights(weigtsGrad)
@@ -90,6 +92,7 @@ class LogisticRegression(Classifier):
             True if the testInstance is recognized as a 7, False otherwise.
         """
         return np.random.random_sample() <= self.fire(testInstance)
+        #return self.fire(testInstance) >= 0.5  # works better?
 
     def evaluate(self, test=None):
         """Evaluate a whole dataset.
