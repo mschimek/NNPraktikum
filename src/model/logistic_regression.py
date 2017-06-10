@@ -56,7 +56,26 @@ class LogisticRegression(Classifier):
             Print logging messages with validation accuracy if verbose is True.
         """
 
-        pass
+        from util.loss_functions import MeanSquaredError
+        loss = MeanSquaredError()
+
+        for x in range(self.epochs):
+            #output and targetvec
+            outputvec = self.fire(self.trainingSet.input)
+            targetvec = self.trainingSet.label
+
+            #MSE 
+            weigtsGrad = self.learningRate*np.dot((targetvec - outputvec)*outputvec*(1.0 - outputvec),self.trainingSet.input)
+
+            if verbose:
+                totalError = loss.calculateError(targetvec,outputvec)
+                logging.info("Epoch: %i; Error: %i", x, totalError)
+
+
+            self.updateWeights(weigtsGrad)
+
+
+
         
     def classify(self, testInstance):
         """Classify a single instance.
@@ -70,7 +89,7 @@ class LogisticRegression(Classifier):
         bool :
             True if the testInstance is recognized as a 7, False otherwise.
         """
-        pass
+        return np.random.random_sample() <= self.fire(testInstance)
 
     def evaluate(self, test=None):
         """Evaluate a whole dataset.
@@ -92,7 +111,7 @@ class LogisticRegression(Classifier):
         return list(map(self.classify, test))
 
     def updateWeights(self, grad):
-        pass
+        self.weight += grad
 
     def fire(self, input):
         # Look at how we change the activation function here!!!!
