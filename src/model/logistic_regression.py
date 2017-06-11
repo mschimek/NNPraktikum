@@ -77,6 +77,8 @@ class LogisticRegression(Classifier):
 
             if self.errorstr == "MSE":
                 #MSE 
+		#There seems to be an inconsistency: on the lecture slides (NN05 (2016) MSE is defined as 1/2 sum from i = 1 to k (t_k - o_k)^2
+ 		#whereas in util.loss_functions there is another definition. We decided to implement the variant from the lecture slides
                 weightsGrad = self.learningRate*np.dot((targetvec - outputvec)*outputvec*(1.0 - outputvec),self.trainingSet.input)
             elif self.errorstr == "BCE":
                 #BCE
@@ -86,7 +88,7 @@ class LogisticRegression(Classifier):
 
             if verbose:
                 totalError = loss.calculateError(targetvec,outputvec)
-                logging.info("Epoch: %i; Error: %i", x, totalError)
+                logging.info("Epoch: %i; Error: %f", x, totalError)
 
             self.updateWeights(weightsGrad)
 

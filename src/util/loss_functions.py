@@ -60,6 +60,7 @@ class MeanSquaredError(Error):
 
     def calculateError(self, target, output):
         # MSE = 1/n*sum (i=1 to n) of (target_i - output_i)^2)
+        # inconsistency concerning the definitions of MSE: see comment in logisitc_regression.py/train()
         return 0.5*np.sum((target - output)**2.0)
 
 
