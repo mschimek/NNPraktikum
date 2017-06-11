@@ -7,6 +7,7 @@ from model.perceptron import Perceptron
 from model.logistic_regression import LogisticRegression
 from report.evaluator import Evaluator
 import matplotlib.pyplot as plt
+import time
 
 
 def main():
@@ -23,7 +24,7 @@ def main():
                                         data.validationSet,
                                         data.testSet,
                                         learningRate=0.5,
-                                        epochs=1000,errorstr="MSE")
+                                        epochs=500,errorstr="MSE")
     myLogisticRegressionClassifierSSE = LogisticRegression(data.trainingSet,
                                         data.validationSet,
                                         data.testSet,
@@ -40,23 +41,33 @@ def main():
     print("Training..")
 
     print("\nStupid Classifier has been training..")
-    myStupidClassifier.train()
+    stupid_time = time.time()
+    myStupidClassifier.train() 
+    stupid_time = time.time() - stupid_time
     print("Done..")
 
     print("\nPerceptron has been training..")
+    perceptron_time = time.time()
     myPerceptronClassifier.train()
+    perceptron_time = time.time() - perceptron_time
     print("Done..")
 
     print("\nLogistic Regression (MSE) has been training..")
+    mse_time = time.time()
     myLogisticRegressionClassifierMSE.train()
+    mse_time = time.time() - mse_time
     print("Done..")
 
     print("\nLogistic Regression (SSE) has been training..")
+    sse_time = time.time()
     myLogisticRegressionClassifierSSE.train()
+    sse_time = time.time() -sse_time
     print("Done..")
-
+ 
     print("\nLogistic Regression (BCE) has been training..")
+    bce_time = time.time()
     myLogisticRegressionClassifierBCE.train()
+    bce_time = time.time() - bce_time
     print("Done..")
 
     # Do the recognizer
@@ -74,22 +85,27 @@ def main():
     print("Result of the stupid recognizer:")
     # evaluator.printComparison(data.testSet, stupidPred)
     evaluator.printAccuracy(data.testSet, stupidPred)
+    print("Time for training %f sec" % stupid_time)
 
     print("\nResult of the Perceptron recognizer:")
     # evaluator.printComparison(data.testSet, perceptronPred)
     evaluator.printAccuracy(data.testSet, perceptronPred)
+    print("Time for training %f sec" % perceptron_time)
 
     print("\nResult of the Logistic Regression (MSE) recognizer:")
     # evaluator.printComparison(data.testSet, logisticRegressionPredMSE)
     evaluator.printAccuracy(data.testSet, logisticRegressionPredMSE)
+    print("Time for training %f sec" % mse_time)
 
     print("\nResult of the Logistic Regression (SSE) recognizer:")
     # evaluator.printComparison(data.testSet, logisticRegressionPredSSE)
     evaluator.printAccuracy(data.testSet, logisticRegressionPredSSE)
+    print("Time for training %f sec" % sse_time)
 
     print("\nResult of the Logistic Regression (BCE) recognizer:")
     # evaluator.printComparison(data.testSet, logisticRegressionPredBCE)
     evaluator.printAccuracy(data.testSet, logisticRegressionPredBCE)
+    print("Time for training %f sec" % bce_time)
 
     plt.subplot(3, 1, 1)
     plt.plot(range(myLogisticRegressionClassifierMSE.epochs),myLogisticRegressionClassifierMSE.errorvec)

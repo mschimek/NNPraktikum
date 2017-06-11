@@ -79,7 +79,7 @@ class LogisticRegression(Classifier):
             outputvec = self.fire(self.trainingSet.input)
             targetvec = self.trainingSet.label
             n = len(self.trainingSet.input)
-	    
+	    print("outputvec ",  len(outputvec))
             # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             #There seems to be an inconsistency: on the lecture slides (NN05 (2016) MSE is defined as 1/2 sum from i = 1 to k (t_k - o_k)^2
             #whereas in util.loss_functions there is another definition. We decided to use the definition given in util.loss_functions
