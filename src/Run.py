@@ -6,10 +6,11 @@ from model.stupid_recognizer import StupidRecognizer
 from model.perceptron import Perceptron
 from model.logistic_regression import LogisticRegression
 from report.evaluator import Evaluator
+import matplotlib.pyplot as plt
 
 
 def main():
-    data = MNISTSeven("../NNPraktikum/data/mnist_seven.csv", 3000, 1000, 1000)
+    data = MNISTSeven("../data/mnist_seven.csv", 3000, 1000, 1000)
     myStupidClassifier = StupidRecognizer(data.trainingSet,
                                           data.validationSet,
                                           data.testSet)
@@ -75,7 +76,17 @@ def main():
     print("\nResult of the Logistic Regression (BCE) recognizer:")
     # evaluator.printComparison(data.testSet, logisticRegressionPredBCE)
     evaluator.printAccuracy(data.testSet, logisticRegressionPredBCE)
-    
+
+    plt.subplot(2, 1, 1)
+    plt.plot(range(myLogisticRegressionClassifierMSE.epochs),myLogisticRegressionClassifierMSE.errorvec)
+    plt.title('MSE')
+    plt.ylabel('Error')
+    plt.subplot(2, 1, 2)
+    plt.plot(range(myLogisticRegressionClassifierBCE.epochs),myLogisticRegressionClassifierBCE.errorvec)
+    plt.title('BCE')
+    plt.xlabel('epochs')
+    plt.ylabel('Error')
+    plt.show()
     
 if __name__ == '__main__':
     main()

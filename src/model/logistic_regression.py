@@ -44,6 +44,7 @@ class LogisticRegression(Classifier):
         self.validationSet = valid
         self.testSet = test
         self.errorstr = errorstr
+        self.errorvec = 0
 
         # Initialize the weight vector with small values
         self.weight = 0.01*np.random.randn(self.trainingSet.input.shape[1])
@@ -86,10 +87,12 @@ class LogisticRegression(Classifier):
 
             if verbose:
                 totalError = loss.calculateError(targetvec,outputvec)
+                self.errorvec = np.append(self.errorvec,totalError)
                 logging.info("Epoch: %i; Error: %i", x, totalError)
 
             self.updateWeights(weightsGrad)
 
+        self.errorvec = np.delete(self.errorvec,0)
 
 
         
