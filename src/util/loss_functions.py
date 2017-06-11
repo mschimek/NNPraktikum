@@ -61,7 +61,8 @@ class MeanSquaredError(Error):
     def calculateError(self, target, output):
         # MSE = 1/n*sum (i=1 to n) of (target_i - output_i)^2)
         # inconsistency concerning the definitions of MSE: see comment in logisitc_regression.py/train()
-        return 0.5*np.sum((target - output)**2.0)
+	n = len(output)
+        return (1.0/n)*np.sum((target - output)**2.0)
 
 
 class SumSquaredError(Error):
@@ -74,7 +75,7 @@ class SumSquaredError(Error):
 
     def calculateError(self, target, output):
         # SSE = 1/2*sum (i=1 to n) of (target_i - output_i)^2)
-        pass
+        return 0.5*np.sum((target - output)**2.0)
 
 
 class BinaryCrossEntropyError(Error):

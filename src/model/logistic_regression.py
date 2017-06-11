@@ -58,11 +58,14 @@ class LogisticRegression(Classifier):
         """
 
         from util.loss_functions import MeanSquaredError
+	from util.loss_functions import SumSquaredError
         from util.loss_functions import BinaryCrossEntropyError
         from util.loss_functions import DifferentError
 
         if self.errorstr == "MSE":
             loss = MeanSquaredError()
+	elif self.errorstr == "SSE":
+	    loss = SumSquaredError()
         elif self.errorstr == "BCE":
             loss = BinaryCrossEntropyError()
             #loss = DifferentError()
@@ -74,13 +77,19 @@ class LogisticRegression(Classifier):
             #output and targetvec
             outputvec = self.fire(self.trainingSet.input)
             targetvec = self.trainingSet.label
-
+	    n = len(self.trainingSet.input)
+	    
+            # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 	    #There seems to be an inconsistency: on the lecture slides (NN05 (2016) MSE is defined as 1/2 sum from i = 1 to k (t_k - o_k)^2
+ 	    #whereas in util.loss_functions there is another definition. We decided to use the definition given in util.loss_functions
+	    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             if self.errorstr == "MSE":
                 #MSE 
-		#There seems to be an inconsistency: on the lecture slides (NN05 (2016) MSE is defined as 1/2 sum from i = 1 to k (t_k - o_k)^2
- 		#whereas in util.loss_functions there is another definition. We decided to implement the variant from the lecture slides
-                weightsGrad = self.learningRate*np.dot((targetvec - outputvec)*outputvec*(1.0 - outputvec),self.trainingSet.input)
-            elif self.errorstr == "BCE":
+                weightsGrad = self.learningRate*(2.0/n)*np.dot((targetvec - outputvec)*outputvec*(1.0 - outputvec),self.trainingSet.input)
+            elif self.errorstr == "SSE":
+		#SSE
+		weightsGrad = self.learningRate*np.dot((targetvec - outputvec)*outputvec*(1.0 - outputvec),self.trainingSet.input)
+	    elif self.errorstr == "BCE":
                 #BCE
                 weightsGrad = self.learningRate*np.dot(targetvec - outputvec,self.trainingSet.input)
             else:

@@ -21,8 +21,13 @@ def main():
     myLogisticRegressionClassifierMSE = LogisticRegression(data.trainingSet,
                                         data.validationSet,
                                         data.testSet,
+                                        learningRate=0.5,
+                                        epochs=1000,errorstr="MSE")
+    myLogisticRegressionClassifierSSE = LogisticRegression(data.trainingSet,
+                                        data.validationSet,
+                                        data.testSet,
                                         learningRate=0.0008,
-                                        epochs=500,errorstr="MSE")
+                                        epochs=500,errorstr="SSE")
     myLogisticRegressionClassifierBCE = LogisticRegression(data.trainingSet,
                                         data.validationSet,
                                         data.testSet,
@@ -45,6 +50,10 @@ def main():
     myLogisticRegressionClassifierMSE.train()
     print("Done..")
 
+    print("\nLogistic Regression (SSE) has been training..")
+    myLogisticRegressionClassifierSSE.train()
+    print("Done..")
+
     print("\nLogistic Regression (BCE) has been training..")
     myLogisticRegressionClassifierBCE.train()
     print("Done..")
@@ -54,6 +63,7 @@ def main():
     stupidPred = myStupidClassifier.evaluate()
     perceptronPred = myPerceptronClassifier.evaluate()
     logisticRegressionPredMSE = myLogisticRegressionClassifierMSE.evaluate()
+    logisticRegressionPredSSE = myLogisticRegressionClassifierSSE.evaluate()
     logisticRegressionPredBCE = myLogisticRegressionClassifierBCE.evaluate()
 
     # Report the result
@@ -71,6 +81,10 @@ def main():
     print("\nResult of the Logistic Regression (MSE) recognizer:")
     # evaluator.printComparison(data.testSet, logisticRegressionPredMSE)
     evaluator.printAccuracy(data.testSet, logisticRegressionPredMSE)
+
+    print("\nResult of the Logistic Regression (SSE) recognizer:")
+    # evaluator.printComparison(data.testSet, logisticRegressionPredSSE)
+    evaluator.printAccuracy(data.testSet, logisticRegressionPredSSE)
 
     print("\nResult of the Logistic Regression (BCE) recognizer:")
     # evaluator.printComparison(data.testSet, logisticRegressionPredBCE)
