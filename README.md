@@ -6,8 +6,14 @@ Our implementation of the first exercise (Rosenblatt perceptron)
 ## ex2-our-solution
 Our implementation of the second exercise
 
+## ex3-our-solution
+Our implementation of the third exercise
+
 ## Ex1
 Coding framework for the second excercise + solution of the first exercise provided by the 'uebungsleiter'
+
+## Ex2
+Coding framework for the third excercise + solution of the second exercise provided by the 'uebungsleiter'
 
 
 
