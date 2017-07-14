@@ -4,10 +4,10 @@ import time
 import numpy as np
 
 from util.activation_functions import Activation
-from model.layer import Layer
+"""from model.layer import Layer"""
 
 
-class LogisticLayer(Layer):
+class LogisticLayer():
     """
     A layer of perceptrons acting as the output layer
 
@@ -55,7 +55,7 @@ class LogisticLayer(Layer):
         self.input = np.ndarray((nIn+1, 1))
         self.input[0] = 1
         self.output = np.ndarray((nOut, 1))
-        self.delta = np.zeros((nOut, 1))
+        self.delta = np.zeros(nOut)
 
         # You can have better initialization here
         if weights is None:
@@ -74,21 +74,25 @@ class LogisticLayer(Layer):
         """
         Compute forward step over the input using its weights
 
+        Assume that first input value is bias (=1).
+
         Parameters
         ----------
         input : ndarray
             a numpy array (1,nIn + 1) containing the input of the layer
-
+        
         Returns
         -------
         ndarray :
             a numpy array (1,nOut) containing the output of the layer
         """
-        pass
+        self.input = np.array(input)
+        self.output = self.activation(np.dot(self.weights, self.input))
+        return self.output
 
     def computeDerivative(self, nextDerivatives, nextWeights):
         """
-        Compute the derivatives (back)
+        Compute the derivatives (back)  
 
         Parameters
         ----------
@@ -102,10 +106,12 @@ class LogisticLayer(Layer):
         ndarray :
             a numpy array containing the partial derivatives on this layer
         """
-        pass
+        derivative = Activation.getDerivative(self.activationString)
+        self.delta = derivative(self.output) * np.squeeze(np.asarray(np.dot(np.matrix(nextDerivatives), nextWeights)))
+        return self.delta
 
     def updateWeights(self):
         """
         Update the weights of the layer
         """
-        pass
+        self.weights += np.dot(np.matrix(self.delta).T, np.matrix(self.input))
