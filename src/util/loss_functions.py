@@ -6,6 +6,7 @@ Loss functions.
 """
 
 import numpy as np
+from numpy import divide as div
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 
@@ -88,6 +89,9 @@ class BinaryCrossEntropyError(Error):
 
     def calculateError(self, target, output):
         return -np.sum(target*np.log(output) + (1.0-np.array(target))*np.log((1.0-np.array(output))))
+
+    def calculateDerivative(self, target, output):	
+	return -div(target,output) + div((1 - target),(1 - output))
 
 
 class CrossEntropyError(Error):

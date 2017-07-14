@@ -6,11 +6,14 @@ import logging
 import numpy as np
 
 from util.activation_functions import Activation
+from logistic_layer import LogisticLayer
 from model.classifier import Classifier
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.DEBUG,
                     stream=sys.stdout)
+
+NUMBER_OF_INPUT_NEURONS = 784
 
 
 class LogisticRegression(Classifier):
@@ -30,7 +33,7 @@ class LogisticRegression(Classifier):
     trainingSet : list
     validationSet : list
     testSet : list
-    weight : list
+    logistic_layer: Logistic_Layer
     learningRate : float
     epochs : positive int
     """
@@ -43,9 +46,13 @@ class LogisticRegression(Classifier):
         self.trainingSet = train
         self.validationSet = valid
         self.testSet = test
+	 
+	#instance of a logistic_layer
+	self.logistic_layer = LogisticLayer(NUMBER_OF_INPUT_NEURONS, 1, activation='sigmoid', isClassifierLayer=True)
+	
 
         # Initialize the weight vector with small values
-        self.weight = 0.01*np.random.randn(self.trainingSet.input.shape[1])
+        #self.weight = 0.01*np.random.randn(self.trainingSet.input.shape[1])
 
     def train(self, verbose=True):
         """Train the Logistic Regression.
@@ -55,8 +62,45 @@ class LogisticRegression(Classifier):
         verbose : boolean
             Print logging messages with validation accuracy if verbose is True.
         """
+	from util.loss_functions import BinaryCrossEntropyError
 
-        from util.loss_functions import DifferentError
+ 	loss = BinaryCrossEntropyError()
+ 	
+	iterations = 0
+	learned = False
+	totalError = 0
+		
+	while not learned:
+	
+	    for i in range (0,3000):
+		x = self.trainingSet.input[i]
+		label = self.trainingSet.label[i]
+		input_with_bias = np.concatenate((np.array([1]),x))
+                output = self.logistic_layer.forward(input_with_bias)
+
+		if output >= 0.9999999:
+		    output = 0.9999
+
+		print("output ", output, "  target: ", label, " error: ", loss.calculateError(label, output))
+				
+                derivative_res = loss.calculateDerivative(label, output)
+		totalError += loss.calculateError(label, output)
+		
+		self.logistic_layer.computeDerivative(derivative_res,np.array([1]))
+		self.logistic_layer.updateWeights()
+
+ 
+	    iterations += 1
+	    if verbose:
+                logging.info("Epoch: %i; Error: %i", iterations, totalError)
+
+            if totalError == 0 or iterations >= self.epochs:
+                # stop criteria is reached
+                learned = True
+
+            totalError = 0
+
+        """from util.loss_functions import DifferentError
         loss = DifferentError()
 
         learned = False
@@ -87,7 +131,7 @@ class LogisticRegression(Classifier):
 
             if totalError == 0 or iteration >= self.epochs:
                 # stop criteria is reached
-                learned = True
+                learned = True"""
 
     def classify(self, testInstance):
         """Classify a single instance.
@@ -101,7 +145,7 @@ class LogisticRegression(Classifier):
         bool :
             True if the testInstance is recognized as a 7, False otherwise.
         """
-        return self.fire(testInstance) > 0.5
+        return self.logistic_layer.forward((np.concatenate((np.array([1]),testInstance))) ) > 0.5
 
     def evaluate(self, test=None):
         """Evaluate a whole dataset.
@@ -122,8 +166,8 @@ class LogisticRegression(Classifier):
         # set.
         return list(map(self.classify, test))
 
-    def updateWeights(self, grad):
-        self.weight -= self.learningRate*grad
+    #def updateWeights(self, grad):
+    #    self.weight -= self.learningRate*grad
 
-    def fire(self, input):
-        return Activation.sigmoid(np.dot(np.array(input), self.weight))
+    #def fire(self, input):
+    #    return Activation.sigmoid(np.dot(np.array(input), self.weight))
