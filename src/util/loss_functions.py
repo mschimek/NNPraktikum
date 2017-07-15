@@ -65,6 +65,8 @@ class MeanSquaredError(Error):
         n = len(output)
         return (1.0/n)*np.sum((target - output)**2.0)
 
+    def calculateDerivative(self, target, output):	
+        return target-output
 
 class SumSquaredError(Error):
     """
@@ -91,7 +93,7 @@ class BinaryCrossEntropyError(Error):
         return -np.sum(target*np.log(output) + (1.0-np.array(target))*np.log((1.0-np.array(output))))
 
     def calculateDerivative(self, target, output):	
-	return -div(target,output) + div((1 - target),(1 - output))
+	    return -div(target,output) + div((1 - target),(1 - output))
 
 
 class CrossEntropyError(Error):
