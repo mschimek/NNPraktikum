@@ -47,7 +47,7 @@ class LogisticRegression(Classifier):
         self.testSet = test
         #instance of a logistic_layer
         self.logistic_layer = LogisticLayer(self.trainingSet.input.shape[1], 1, activation='sigmoid', isClassifierLayer=True)
-        self.loss = MeanSquaredError() #BinaryCrossEntropyError()
+        self.loss = MeanSquaredError() 
         # Initialize the weight vector with small values
         #self.weight = 0.01*np.random.randn(self.trainingSet.input.shape[1])
         self.errorvec = 0
@@ -70,8 +70,7 @@ class LogisticRegression(Classifier):
                 label = self.trainingSet.label[i]
                 input_with_bias = np.concatenate((np.array([1]), x))
                 output = self.logistic_layer.forward(input_with_bias)
-                output[output >= 0.9999999] = 0.9999
-                #print("output ", output, "  target: ", label, " error: ", self.loss.calculateError(label, output))
+                
                     
                 derivative_res = self.loss.calculateDerivative(label, output)
                 totalError += self.loss.calculateError(label, output)
@@ -91,38 +90,6 @@ class LogisticRegression(Classifier):
                 
         self.errorvec = np.delete(self.errorvec,0)
 
-        """from util.loss_functions import DifferentError
-        loss = DifferentError()
-
-        learned = False
-        iteration = 0
-
-        while not learned:
-            grad = 0
-            totalError = 0
-            for input, label in zip(self.trainingSet.input,
-                                    self.trainingSet.label):
-                output = self.fire(input)
-                # compute gradient
-                grad += -(label - output)*input
-
-                # compute recognizing error, not BCE
-                predictedLabel = self.classify(input)
-                error = loss.calculateError(label, predictedLabel)
-                totalError += error
-
-            self.updateWeights(grad)
-            totalError = abs(totalError)
-            
-            iteration += 1
-
-            if verbose:
-                logging.info("Epoch: %i; Error: %i", iteration, totalError)
-                
-
-            if totalError == 0 or iteration >= self.epochs:
-                # stop criteria is reached
-                learned = True"""
 
     def classify(self, testInstance):
         """Classify a single instance.

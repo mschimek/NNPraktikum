@@ -112,7 +112,7 @@ class LogisticLayer():
         self.delta = derivative(self.net) * np.squeeze(np.asarray(np.dot(np.matrix(nextDerivatives), nextWeights)))
         return self.delta
 
-    def updateWeights(self, learningRate):
+    def updateWeights(self, learningRate=1):
         """
         Update the weights of the layer
         """
