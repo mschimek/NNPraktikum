@@ -55,6 +55,7 @@ class LogisticLayer():
         self.input = np.ndarray((nIn+1, 1))
         self.input[0] = 1
         self.output = np.ndarray((nOut, 1))
+        self.net = np.ndarray((nOut, 1))
         self.delta = np.zeros(nOut)
 
         # You can have better initialization here
@@ -79,15 +80,16 @@ class LogisticLayer():
         Parameters
         ----------
         input : ndarray
-            a numpy array (1,nIn + 1) containing the input of the layer
+            a numpy array (nIn + 1,) containing the input of the layer
         
         Returns
         -------
         ndarray :
-            a numpy array (1,nOut) containing the output of the layer
+            a numpy array (nOut,) containing the output of the layer
         """
         self.input = np.array(input)
-        self.output = self.activation(np.dot(self.weights, self.input))
+        self.net = np.dot(self.weights, self.input)
+        self.output = self.activation(self.net)
         return self.output
 
     def computeDerivative(self, nextDerivatives, nextWeights):
@@ -107,7 +109,7 @@ class LogisticLayer():
             a numpy array containing the partial derivatives on this layer
         """
         derivative = Activation.getDerivative(self.activationString)
-        self.delta = derivative(self.output) * np.squeeze(np.asarray(np.dot(np.matrix(nextDerivatives), nextWeights)))
+        self.delta = derivative(self.net) * np.squeeze(np.asarray(np.dot(np.matrix(nextDerivatives), nextWeights)))
         return self.delta
 
     def updateWeights(self):
