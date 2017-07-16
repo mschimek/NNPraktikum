@@ -65,24 +65,24 @@ class LogisticRegression(Classifier):
         totalError = 0
 
         while not learned:
-            for i in range (0, self.trainingSet.input.shape[0]):
+            for i in range (0, self.trainingSet.input.shape[0]): #self.trainingSet.input.shape[0]
                 x = self.trainingSet.input[i]
                 label = self.trainingSet.label[i]
                 input_with_bias = np.concatenate((np.array([1]), x))
                 output = self.logistic_layer.forward(input_with_bias)
                 output[output >= 0.9999999] = 0.9999
-                print("output ", output, "  target: ", label, " error: ", self.loss.calculateError(label, output))
+                #print("output ", output, "  target: ", label, " error: ", self.loss.calculateError(label, output))
                     
                 derivative_res = self.loss.calculateDerivative(label, output)
-                totalError = self.loss.calculateError(label, output)
-                self.errorvec = np.append(self.errorvec,totalError)
+                totalError += self.loss.calculateError(label, output)
             
                 self.logistic_layer.computeDerivative(derivative_res, np.array([1]))
-                self.logistic_layer.updateWeights()
+                self.logistic_layer.updateWeights(self.learningRate)
     
             iterations += 1
             if verbose:
                 logging.info("Epoch: %i; Error: %i", iterations, totalError)
+                self.errorvec = np.append(self.errorvec,totalError)
 
                 if totalError == 0 or iterations >= self.epochs:
                     # stop criteria is reached

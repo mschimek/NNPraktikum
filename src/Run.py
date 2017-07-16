@@ -6,6 +6,7 @@ from model.stupid_recognizer import StupidRecognizer
 from model.perceptron import Perceptron
 from model.logistic_regression import LogisticRegression
 from report.evaluator import Evaluator
+import matplotlib.pyplot as plt
 
 
 def main():
@@ -24,7 +25,7 @@ def main():
                                         data.validationSet,
                                         data.testSet,
                                         learningRate=0.005,
-                                        epochs=1)                                        
+                                        epochs=30)                                        
 
     # Train the classifiers
     print("=========================")
@@ -64,7 +65,11 @@ def main():
     print("\nResult of the Logistic Regression recognizer:")
     # evaluator.printComparison(data.testSet, perceptronPred)    
     evaluator.printAccuracy(data.testSet, lrPred)
-    
+
+    plt.plot(range(myLRClassifier.epochs), myLRClassifier.errorvec)
+    plt.title('MSE')
+    plt.ylabel('Error')
+    plt.show()
     
 if __name__ == '__main__':
     main()
