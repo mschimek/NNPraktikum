@@ -50,6 +50,7 @@ class LogisticRegression(Classifier):
         self.loss = MeanSquaredError() #BinaryCrossEntropyError()
         # Initialize the weight vector with small values
         #self.weight = 0.01*np.random.randn(self.trainingSet.input.shape[1])
+        self.errorvec = 0
     
     def train(self, verbose=True):
         """Train the Logistic Regression.
@@ -73,7 +74,8 @@ class LogisticRegression(Classifier):
                 print("output ", output, "  target: ", label, " error: ", self.loss.calculateError(label, output))
                     
                 derivative_res = self.loss.calculateDerivative(label, output)
-                totalError += self.loss.calculateError(label, output)
+                totalError = self.loss.calculateError(label, output)
+                self.errorvec = np.append(self.errorvec,totalError)
             
                 self.logistic_layer.computeDerivative(derivative_res, np.array([1]))
                 self.logistic_layer.updateWeights()
@@ -86,6 +88,9 @@ class LogisticRegression(Classifier):
                     # stop criteria is reached
                     learned = True
                 totalError = 0
+                
+        self.errorvec = np.delete(self.errorvec,0)
+
         """from util.loss_functions import DifferentError
         loss = DifferentError()
 
