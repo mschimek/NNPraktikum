@@ -110,6 +110,7 @@ class LogisticLayer():
 
         # Here the implementation of partial derivative calculation
 
+
         # In case of the output layer, next_weights is array of 1
         # and next_derivatives - the derivative of the error will be the errors
         # Please see the call of this method in LogisticRegression.
@@ -125,6 +126,7 @@ class LogisticLayer():
         # Or even more general: doesn't care which activation function is used
         # dado: derivative of activation function w.r.t the output
         dado = self.activationDerivative(self.outp)
+        #print(dado.shape)
         self.deltas = (dado * np.dot(next_derivatives, next_weights))
 
         # Or you can explicitly calculate the derivatives for two cases

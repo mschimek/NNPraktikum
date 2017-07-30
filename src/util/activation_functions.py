@@ -5,6 +5,8 @@ Activation functions which can be used within neurons.
 """
 
 from numpy import exp
+from numpy import sum as npsum
+from numpy import max as npmax
 from numpy import divide
 from numpy import ones
 from numpy import asarray
@@ -63,13 +65,11 @@ class Activation:
 
     @staticmethod
     def softmax(netOutput):
-        # Here you have to code the softmax function
-        pass
-        
+        tmp = netOutput - npmax(netOutput)
+        return exp(tmp)/npsum(exp(tmp))
     @staticmethod
     def softmaxPrime(netOutput):
-        # Here you have to code the softmax function
-        pass
+        return Activation.softmax(netOutput)*(1-Activation.softmax(netOutput))
         
     @staticmethod
     def getActivation(str):

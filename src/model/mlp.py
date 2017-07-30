@@ -2,6 +2,7 @@
 import numpy as np
 
 from util.loss_functions import CrossEntropyError
+from util.loss_functions import BinaryCrossEntropyError 
 from model.logistic_layer import LogisticLayer
 from model.classifier import Classifier
 
@@ -43,7 +44,6 @@ class MultilayerPerceptron(Classifier):
         self.epochs = epochs
         self.outputTask = outputTask  # Either classification or regression
         self.outputActivation = outputActivation
-        self.cost = cost
 
         self.trainingSet = train
         self.validationSet = valid
@@ -139,14 +139,54 @@ class MultilayerPerceptron(Classifier):
         verbose : boolean
             Print logging messages with validation accuracy if verbose is True.
         """
-        pass
-
-
+        for epoch in range(self.epochs):
+            if verbose:
+                print("Training epoch {0}/{1}..".
+                      format(epoch + 1, self.epochs))
+            for img, label in zip(self.trainingSet.input,
+                                  self.trainingSet.label):
+                t = img
+                for i in range(len(self.layers)):
+                    t = self.layers[i].forward(t)
+                    t = np.insert(t, 0, 1, axis=0)
+                tmp = np.clip(self._get_output_layer().outp, 1e-7, 1.0-1e-7)
+                deltas = self.loss.calculateDerivative(label,tmp)
+                weights = 1.0
+                for i in reversed(range(len(self.layers))):
+                    #print(i)
+                    #print(self.layers[i].nIn)
+                    #print(self.layers[i].nOut)
+                    deltas = self.layers[i].computeDerivative(deltas, weights)
+                    
+                    print(deltas)
+                    #print("Delta")
+                    #print(deltas.shape)
+                    weights = self.layers[i].weights[0:-1, :]
+                    #print("Weights")
+                    #if i == 0:
+                     #   print(weights)
+                    weights = np.transpose(weights)
+                    #print(weights.shape)
+                    #deltas = np.transpose([deltas]*(self.layers[i].nIn + 1))
+                    self.layers[i].updateWeights(self.learningRate)
+            if verbose:
+                accuracy = accuracy_score(self.validationSet.label,
+                                          self.evaluate(self.validationSet))
+                # Record the performance of each epoch for later usages
+                # e.g. plotting, reporting..
+                self.performances.append(accuracy)
+                print("Accuracy on validation: {0:.2f}%"
+                      .format(accuracy * 100))
+                print("-----------------------------")
 
     def classify(self, test_instance):
         # Classify an instance given the model of the classifier
         # You need to implement something here
-        pass
+        t = test_instance
+        for i in range(len(self.layers)):
+            t = self.layers[i].forward(t)
+            t = np.insert(t, 0, 1, axis=0)
+        return np.argmax(t)
         
 
     def evaluate(self, test=None):
