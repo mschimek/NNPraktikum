@@ -3,6 +3,7 @@ import numpy as np
 
 from util.loss_functions import CrossEntropyError
 from util.loss_functions import BinaryCrossEntropyError 
+from util.loss_functions import MeanSquaredError
 from model.logistic_layer import LogisticLayer
 from model.classifier import Classifier
 
@@ -17,7 +18,7 @@ class MultilayerPerceptron(Classifier):
 
     def __init__(self, train, valid, test, layers=None, inputWeights=None,
                  outputTask='classification', outputActivation='softmax',
-                 loss='bce', learningRate=0.01, epochs=50):
+                 loss='mse', learningRate=0.01, epochs=50):
 
         """
         A MNIST recognizer based on multi-layer perceptron algorithm
@@ -72,7 +73,7 @@ class MultilayerPerceptron(Classifier):
         # Build up the network from specific layers
         self.layers = []
 
-        # Input layer
+        # Hidden layer
         inputActivation = "sigmoid"
         self.layers.append(LogisticLayer(train.input.shape[1], 128, 
                            None, inputActivation, False))
@@ -81,7 +82,7 @@ class MultilayerPerceptron(Classifier):
         outputActivation = "softmax"
         self.layers.append(LogisticLayer(128, 10, 
                            None, outputActivation, True))
-
+        
         self.inputWeights = inputWeights
 
         # add bias values ("1"s) at the beginning of all data sets
@@ -148,27 +149,23 @@ class MultilayerPerceptron(Classifier):
                 t = img
                 for i in range(len(self.layers)):
                     t = self.layers[i].forward(t)
+                    #if i == 1:
+                    #    print(i, t)
                     t = np.insert(t, 0, 1, axis=0)
-                tmp = np.clip(self._get_output_layer().outp, 1e-7, 1.0-1e-7)
-                deltas = self.loss.calculateDerivative(label,tmp)
-                weights = 1.0
-                for i in reversed(range(len(self.layers))):
-                    #print(i)
-                    #print(self.layers[i].nIn)
-                    #print(self.layers[i].nOut)
-                    deltas = self.layers[i].computeDerivative(deltas, weights)
                     
-                    print(deltas)
-                    #print("Delta")
-                    #print(deltas.shape)
-                    weights = self.layers[i].weights[0:-1, :]
-                    #print("Weights")
-                    #if i == 0:
-                     #   print(weights)
+                one_hot_label = np.zeros(10)
+                one_hot_label[label] = 1
+                
+                deltas = self.loss.calculateDerivative(one_hot_label,self._get_output_layer().outp)
+           
+                weights = np.ones(10)
+                for i in reversed(range(len(self.layers))):
+                    deltas = self.layers[i].computeDerivative(deltas, weights)
+                    weights = self.layers[i].weights[1:, :]
                     weights = np.transpose(weights)
-                    #print(weights.shape)
-                    #deltas = np.transpose([deltas]*(self.layers[i].nIn + 1))
                     self.layers[i].updateWeights(self.learningRate)
+           
+
             if verbose:
                 accuracy = accuracy_score(self.validationSet.label,
                                           self.evaluate(self.validationSet))
@@ -186,7 +183,8 @@ class MultilayerPerceptron(Classifier):
         for i in range(len(self.layers)):
             t = self.layers[i].forward(t)
             t = np.insert(t, 0, 1, axis=0)
-        return np.argmax(t)
+        #print(np.argmax(t[1:]))
+        return np.argmax(t[1:])
         
 
     def evaluate(self, test=None):
@@ -206,6 +204,7 @@ class MultilayerPerceptron(Classifier):
             test = self.testSet.input
         # Once you can classify an instance, just use map for all of the test
         # set.
+        #print(test)
         return list(map(self.classify, test))
 
     def __del__(self):
